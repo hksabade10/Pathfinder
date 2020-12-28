@@ -22,26 +22,21 @@ public:
     static void setStartNode(GraphNode* node);
     static void setEndNode(GraphNode* node);
 
-    int distance(GraphNode* A, GraphNode* B);
+    void mousePressedEvent(QMouseEvent event);
 
-    bool isPresent(GraphNode* M, QQueue<GraphNode*>& list);
-
-    void propagateImprovement(GraphNode* M, QQueue<GraphNode*>& closed);
-
-    void addToOpen(GraphNode* M, QQueue<GraphNode*>& open);
-
-    void reconstructPath();
+    void resetScreen();
 
 private slots:
     void on_startAlgorithm_clicked();
 
+    void on_clearButton_clicked();
 
 private:
     Ui::MainWindow *ui;
 
     QGraphicsScene* scene;
 
-    GraphNode* node[20][30];
+    QVector<QVector<GraphNode*>> node;
 
     static GraphNode* startNode;
     static GraphNode* endNode;

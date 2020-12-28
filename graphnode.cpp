@@ -8,9 +8,9 @@ GraphNode::GraphNode(int x, int y, qreal width, qreal height)
     this->y = y+1;
 
     rect = QRectF((y)*45, (x)*45, width, height);
-    bPressed = false;
     setFlag(ItemIsSelectable);
     setFlag(ItemIsFocusable);
+
 }
 
 QRectF GraphNode::boundingRect() const
@@ -21,9 +21,9 @@ QRectF GraphNode::boundingRect() const
 void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QRectF rec = boundingRect();
-    QBrush brush(Qt::blue);
+    QBrush brush(Qt::gray);
 
-    //if(bPressed)
+
     if(bStart)
     {
         brush.setColor(Qt::red);
@@ -35,47 +35,44 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     else if(bObstacle)
     {
         brush.setColor(Qt::black);
-        hide();
+        // hide();
+    }
+    else if(bPath)
+    {
+        brush.setColor(Qt::green);
+    }
+    else if(bClosed)
+    {
+        brush.setColor(Qt::yellow);
+    }
+    else if(bOpen)
+    {
+        brush.setColor(Qt::cyan);
     }
     else
     {
         brush.setColor(Qt::gray);
-        setVisible(true);
+        // show();
     }
-
-    if(bOpen && !bStart && !bEnd)
-    {
-        brush.setColor(Qt::cyan);
-    }
-    if(bClosed && !bStart && !bEnd)
-    {
-        brush.setColor(Qt::yellow);
-    }
-    if(bPath && !bStart && !bEnd)
-    {
-        brush.setColor(Qt::green);
-    }
-
 
     painter->fillRect(rec, brush);
     painter->drawRect(rec);
-    setFlag(ItemIsSelectable);
 }
 
 void GraphNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
+{    
     bPressed = true;
 
-    if(bStart)
-    {
-        MainWindow::setStartNode(nullptr);
-        bStart = false;
-    }
-    if(bEnd)
-    {
-        MainWindow::setEndNode(nullptr);
-        bEnd = false;
-    }
+//    if(bStart)
+//    {
+//        MainWindow::setStartNode(nullptr);
+//        bStart = false;
+//    }
+//    if(bEnd)
+//    {
+//        MainWindow::setEndNode(nullptr);
+//        bEnd = false;
+//    }
 
     update();
     QGraphicsItem::mousePressEvent(event);
@@ -84,11 +81,8 @@ void GraphNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     bPressed = false;
-//    bStart = false;
-//    bEnd = false;
-//    bObstacle = false;
 
-    //update();
+    update();
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -99,14 +93,12 @@ void GraphNode::keyPressEvent(QKeyEvent *event)
         if(event->key() == Qt::Key_S)
         {
             MainWindow::setStartNode(this);
-            bStart = true;
-            gcost = 0;
+            setStart();
         }
         else if(event->key() == Qt::Key_G)
         {
             MainWindow::setEndNode(this);
-            bEnd = true;
-            hcost = 0;
+            setEnd();
         }
         else if(event->key() == Qt::Key_B)
         {
@@ -123,19 +115,9 @@ void GraphNode::addNeighbour(GraphNode* node)
     neighbours.push_back(node);
 }
 
-//void GraphNode::calculateGCost()
-//{
-//    gcost = parent->getGCost() + qSqrt((x - parent->getX())*(x - parent->getX()) + (y - parent->getY())*(y - parent->getY()));
-//}
-
 void GraphNode::setParent(GraphNode *node)
 {
     parent = node;
-}
-
-void GraphNode::setVisited(bool bVal)
-{
-    bVisited = bVal;
 }
 
 void GraphNode::setGCost(int val)
@@ -162,14 +144,46 @@ void GraphNode::setClosed()
 void GraphNode::setOpen()
 {
     bOpen = true;
-    //_sleep(30);
     update();
 }
 
 void GraphNode::setPath()
 {
     bPath = true;
-    //_sleep(30);
+    update();
+}
+
+void GraphNode::setStart()
+{
+    gcost = 0;
+    bStart = true;
+    update();
+}
+
+void GraphNode::setEnd()
+{
+    hcost = 0;
+    bEnd = true;
+    update();
+}
+
+void GraphNode::resetNode()
+{
+    bClosed = false;
+    bOpen = false;
+    bPath = false;
+    bObstacle = false;
+    bStart = false;
+    bEnd = false;
+
+    gcost = INT32_MAX;
+    hcost = INT32_MAX;
+    fcost = INT32_MAX;
+
+    parent = nullptr;
+
+    neighbours.clear();
+
     update();
 }
 

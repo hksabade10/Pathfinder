@@ -22,8 +22,6 @@ public:
     // setters
     void setParent(GraphNode* node);
 
-    void setVisited(bool val);
-
     void setGCost(int val);
 
     void setHCost(int val);
@@ -35,6 +33,13 @@ public:
     void setOpen();
 
     void setPath();
+
+    void setStart();
+
+    void setEnd();
+
+    void resetNode();
+
 
     // getters
     int getX();
@@ -52,7 +57,6 @@ public:
     QVector<GraphNode *> getNeighbours();
 
 
-
     bool isObstacle();
 
 protected:
@@ -67,13 +71,12 @@ protected:
 private:
 
     QRectF rect;
-    bool bPressed;
+    bool bPressed = false;
 
     int gcost = INT32_MAX;
     int hcost = INT32_MAX;
     int fcost = INT32_MAX;
 
-    bool bVisited = false;
     bool bObstacle = false;
     bool bClosed = false;
     bool bOpen = false;
