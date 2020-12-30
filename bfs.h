@@ -3,7 +3,6 @@
 
 #include "graphnode.h"
 
-
 class BFS
 {
 public:
@@ -11,11 +10,13 @@ public:
 
     bool isPresent(GraphNode* M, QList<GraphNode*>& list);
 
-    void runBFS(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node);
+    void runBFS(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node, int& speed);
+
+    int getTotalNodes();
 
 private:
 
-    int cost = 0;
+    int totalNodes = 0;
 
 };
 

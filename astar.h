@@ -17,7 +17,13 @@ public:
 
     void addToOpen(GraphNode* M, QQueue<GraphNode*>& open);
 
-    void runAStar(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node);
+    void runAStar(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node, int& speed);
+
+    int getTotalNodes();
+
+private:
+
+    int totalNodes = 0;
 
 
 };

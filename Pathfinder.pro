@@ -21,6 +21,7 @@ SOURCES += \
     bfs.cpp \
     dfs.cpp \
     dijkstra.cpp \
+    graphicsscene.cpp \
     graphnode.cpp \
     main.cpp \
     mainwindow.cpp
@@ -31,6 +32,7 @@ HEADERS += \
     bfs.h \
     dfs.h \
     dijkstra.h \
+    graphicsscene.h \
     graphnode.h \
     mainwindow.h
 

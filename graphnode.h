@@ -14,8 +14,6 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
-
-
     void addNeighbour(GraphNode* node);
 
 
@@ -38,6 +36,8 @@ public:
 
     void setEnd();
 
+    void setObstacle();
+
     void resetNode();
 
 
@@ -52,21 +52,11 @@ public:
 
     int getHCost(GraphNode* endNode);
 
-    GraphNode *getParent();
+    GraphNode* getParent();
 
-    QVector<GraphNode *> getNeighbours();
-
+    QVector<GraphNode*> getNeighbours();
 
     bool isObstacle();
-
-protected:
-
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
-
-    void keyPressEvent(QKeyEvent *event) override;
-
 
 private:
 
@@ -91,7 +81,6 @@ private:
     QVector<GraphNode*> neighbours;
 
     GraphNode* parent;
-
 };
 
 

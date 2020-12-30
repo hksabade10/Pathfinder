@@ -17,17 +17,40 @@ bool BFS::isPresent(GraphNode *M, QList<GraphNode *> &list)
     return false;
 }
 
-void BFS::runBFS(GraphNode *&startNode, GraphNode *&endNode, QVector<QVector<GraphNode *> > &node)
+void BFS::runBFS(GraphNode *&startNode, GraphNode *&endNode, QVector<QVector<GraphNode *> > &node, int& speed)
 {
 
+    int height = node.size();
+    int width = node[0].size();
+
     // find neighbours of individual nodes
-    for(int i = 0; i < 20; i++)
+    for(int i = 0; i < height; i++)
     {
-        for(int j = 0; j < 30; j++)
+        for(int j = 0; j < width; j++)
         {
-            // not adding obstacle nodes as neighbours
+            // ignoring obstacle nodes as neighbours
             if(node[i][j]->isObstacle())
                 continue;
+
+            // sides
+            if(j > 0)
+                node[i][j]->addNeighbour(node[i][j-1]);
+            if(j < width - 1)
+                node[i][j]->addNeighbour(node[i][j+1]);
+            if(i > 0)
+                node[i][j]->addNeighbour(node[i-1][j]);
+            if(i < height - 1)
+                node[i][j]->addNeighbour(node[i+1][j]);
+
+            // diagonals
+            if(i > 0 && j > 0)
+                node[i][j]->addNeighbour(node[i-1][j-1]);
+            if(i > 0 && j < width - 1)
+                node[i][j]->addNeighbour(node[i-1][j+1]);
+            if(j > 0 && i < height - 1)
+                node[i][j]->addNeighbour(node[i+1][j-1]);
+            if(i < height - 1 && j < width - 1)
+                node[i][j]->addNeighbour(node[i+1][j+1]);
 
 //            if(i > 0)
 //                node[i][j]->addNeighbour(node[i-1][j]);     // top
@@ -46,26 +69,6 @@ void BFS::runBFS(GraphNode *&startNode, GraphNode *&endNode, QVector<QVector<Gra
 //            if(i > 0 && j > 0)
 //                node[i][j]->addNeighbour(node[i-1][j-1]);   // top-left
 
-
-            // sides
-            if(j > 0)
-                node[i][j]->addNeighbour(node[i][j-1]);
-            if(j < 30 - 1)
-                node[i][j]->addNeighbour(node[i][j+1]);
-            if(i > 0)
-                node[i][j]->addNeighbour(node[i-1][j]);
-            if(i < 20 - 1)
-                node[i][j]->addNeighbour(node[i+1][j]);
-
-            // diagonals
-            if(i > 0 && j > 0)
-                node[i][j]->addNeighbour(node[i-1][j-1]);
-            if(i > 0 && j < 30 - 1)
-                node[i][j]->addNeighbour(node[i-1][j+1]);
-            if(j > 0 && i < 20 - 1)
-                node[i][j]->addNeighbour(node[i+1][j-1]);
-            if(i < 20 - 1 && j < 30 - 1)
-                node[i][j]->addNeighbour(node[i+1][j+1]);
 
         }
     }
@@ -137,6 +140,13 @@ void BFS::runBFS(GraphNode *&startNode, GraphNode *&endNode, QVector<QVector<Gra
 
         // update every 'x' milliseconds
         QCoreApplication::processEvents();
-        Sleep(20);
+        Sleep(speed);
     }
+
+    totalNodes = closed.size();
+}
+
+int BFS::getTotalNodes()
+{
+    return totalNodes;
 }

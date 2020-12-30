@@ -1,13 +1,12 @@
 #include "graphnode.h"
-#include "mainwindow.h"
-#include <QDebug>
+#include <QtMath>
 
 GraphNode::GraphNode(int x, int y, qreal width, qreal height)
 {
     this->x = x+1;
     this->y = y+1;
 
-    rect = QRectF((y)*45, (x)*45, width, height);
+    rect = QRectF((y)*26, (x)*26, width, height);
     setFlag(ItemIsSelectable);
     setFlag(ItemIsFocusable);
 
@@ -21,7 +20,7 @@ QRectF GraphNode::boundingRect() const
 void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QRectF rec = boundingRect();
-    QBrush brush(Qt::gray);
+    QBrush brush(Qt::white);
 
 
     if(bStart)
@@ -51,64 +50,13 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     }
     else
     {
-        brush.setColor(Qt::gray);
+        brush.setColor(Qt::white);
         // show();
     }
 
     painter->fillRect(rec, brush);
     painter->drawRect(rec);
 }
-
-void GraphNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{    
-    bPressed = true;
-
-//    if(bStart)
-//    {
-//        MainWindow::setStartNode(nullptr);
-//        bStart = false;
-//    }
-//    if(bEnd)
-//    {
-//        MainWindow::setEndNode(nullptr);
-//        bEnd = false;
-//    }
-
-    update();
-    QGraphicsItem::mousePressEvent(event);
-}
-
-void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    bPressed = false;
-
-    update();
-    QGraphicsItem::mouseReleaseEvent(event);
-}
-
-void GraphNode::keyPressEvent(QKeyEvent *event)
-{
-    if(bPressed)
-    {
-        if(event->key() == Qt::Key_S)
-        {
-            MainWindow::setStartNode(this);
-            setStart();
-        }
-        else if(event->key() == Qt::Key_G)
-        {
-            MainWindow::setEndNode(this);
-            setEnd();
-        }
-        else if(event->key() == Qt::Key_B)
-        {
-            bObstacle = true;
-        }
-        update();
-    }
-    QGraphicsItem::keyPressEvent(event);
-}
-
 
 void GraphNode::addNeighbour(GraphNode* node)
 {
@@ -164,6 +112,12 @@ void GraphNode::setEnd()
 {
     hcost = 0;
     bEnd = true;
+    update();
+}
+
+void GraphNode::setObstacle()
+{
+    bObstacle = true;
     update();
 }
 

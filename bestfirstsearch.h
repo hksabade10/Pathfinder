@@ -13,8 +13,13 @@ public:
 
     void addToOpen(GraphNode *M, QList<GraphNode *> &open, GraphNode* endNode);
 
-    void runBestFirstSearch(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node);
+    void runBestFirstSearch(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node, int& speed);
 
+    int getTotalNodes();
+
+private:
+
+    int totalNodes = 0;
 
 };
 

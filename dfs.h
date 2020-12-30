@@ -10,7 +10,14 @@ public:
 
     bool isPresent(GraphNode* M, QList<GraphNode*>& list);
 
-    void runDFS(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node);
+    void runDFS(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node, int& speed);
+
+    int getTotalNodes();
+
+private:
+
+    int totalNodes = 0;
+
 };
 
 #endif // DFS_H

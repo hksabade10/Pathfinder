@@ -17,8 +17,13 @@ public:
 
     void addToOpen(GraphNode* M, QQueue<GraphNode*>& open);
 
-    void runDijkstra(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node);
+    void runDijkstra(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node, int& speed);
 
+    int getTotalNodes();
+
+private:
+
+    int totalNodes = 0;
 
 };
 
