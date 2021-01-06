@@ -23,8 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->comboBox->addItem("BFS");
     ui->comboBox->addItem("DFS");
 
-
-
     height = 35;
     width = 50;
 
@@ -61,8 +59,10 @@ void MainWindow::resetScreen()
             node[i][j]->resetNode();
         }
 
-        QCoreApplication::processEvents();
-        Sleep(1);
+        // update every 'x' milliseconds
+        QEventLoop loop;
+        QTimer::singleShot(1, &loop, SLOT(quit()));
+        loop.exec();
     }  
 
     scene->setStartNode(scene->getStartNode());
@@ -71,12 +71,9 @@ void MainWindow::resetScreen()
 
 void MainWindow::on_startAlgorithm_clicked()
 {
-
-
     if(!scene->getStartNode() || !scene->getEndNode())
     {
-//        QMessageLogger message()
-//        message.info();
+        // QMessageLogger message()
         qDebug() << "nullptr start/end nodes";
         return;
     }
@@ -129,8 +126,11 @@ void MainWindow::on_startAlgorithm_clicked()
     {
         ptr->setPath();
         ptr = ptr->getParent();
-        QCoreApplication::processEvents();
-        Sleep(5);
+
+        // update every 'x' milliseconds
+        QEventLoop loop;
+        QTimer::singleShot(speed, &loop, SLOT(quit()));
+        loop.exec();
     }
 }
 
@@ -143,11 +143,11 @@ void MainWindow::on_clearButton_clicked()
 
 void MainWindow::on_spinBox_valueChanged(int arg1)
 {
-    speed = arg1;
-    ui->speedSlider->setValue(speed);
+    ui->speedSlider->setValue(arg1);
 }
 
 void MainWindow::on_speedSlider_valueChanged(int value)
 {
+    speed = value;
     ui->spinBox->setValue(value);
 }

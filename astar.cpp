@@ -110,10 +110,7 @@ void AStar::runAStar(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector
         qDebug() << "nullptr start/end nodes";
         return;
     }
-    else
-    {
-        qDebug() << "AStar : EN : " << endNode;
-    }
+
     startNode->setGCost(0);
     startNode->setFCost(startNode->getGCost() + startNode->getHCost(endNode));
 
@@ -126,6 +123,12 @@ void AStar::runAStar(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector
         // pick a node with lowest f() value from open list
         auto& N = open.front();
         open.pop_front();
+        N->setInspecting();
+
+        // update every 'x' milliseconds
+        QEventLoop loop;
+        QTimer::singleShot(speed, &loop, SLOT(quit()));
+        loop.exec();
 
         // add that node to closed list
         closed.push_back(N);
@@ -135,9 +138,7 @@ void AStar::runAStar(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector
         if(N == endNode)
         {
             // reconstructPath(endNode);
-
             qDebug() << "Goal Found";
-
             break;
         }
 
@@ -174,13 +175,11 @@ void AStar::runAStar(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector
             }
         }
 
-        // update every 'x' milliseconds
-        QCoreApplication::processEvents();
-        Sleep(speed);
+//        QCoreApplication::processEvents();
+//        Sleep(speed);
     }
 
     totalNodes = closed.size();
-    qDebug() << "AStar : EN : " << endNode;
 }
 
 int AStar::getTotalNodes()

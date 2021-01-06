@@ -12,7 +12,8 @@ public:
 
     QRectF boundingRect() const override;
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;        
+
 
     void addNeighbour(GraphNode* node);
 
@@ -27,6 +28,8 @@ public:
     void setFCost(int val);
 
     void setClosed();
+
+    void setInspecting();
 
     void setOpen();
 
@@ -69,6 +72,7 @@ private:
 
     bool bObstacle = false;
     bool bClosed = false;
+    bool bInspecting = false;
     bool bOpen = false;
     bool bPath = false;
 

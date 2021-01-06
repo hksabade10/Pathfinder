@@ -9,7 +9,6 @@ GraphNode::GraphNode(int x, int y, qreal width, qreal height)
     rect = QRectF((y)*26, (x)*26, width, height);
     setFlag(ItemIsSelectable);
     setFlag(ItemIsFocusable);
-
 }
 
 QRectF GraphNode::boundingRect() const
@@ -21,7 +20,6 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 {
     QRectF rec = boundingRect();
     QBrush brush(Qt::white);
-
 
     if(bStart)
     {
@@ -43,6 +41,10 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     else if(bClosed)
     {
         brush.setColor(Qt::yellow);
+    }
+    else if(bInspecting)
+    {
+        brush.setColor(Qt::darkCyan);
     }
     else if(bOpen)
     {
@@ -89,6 +91,12 @@ void GraphNode::setClosed()
     update();
 }
 
+void GraphNode::setInspecting()
+{
+    bInspecting = true;
+    update();
+}
+
 void GraphNode::setOpen()
 {
     bOpen = true;
@@ -124,6 +132,7 @@ void GraphNode::setObstacle()
 void GraphNode::resetNode()
 {
     bClosed = false;
+    bInspecting = false;
     bOpen = false;
     bPath = false;
     bObstacle = false;
@@ -181,6 +190,7 @@ bool GraphNode::isObstacle()
 {
     return bObstacle;
 }
+
 
 
 

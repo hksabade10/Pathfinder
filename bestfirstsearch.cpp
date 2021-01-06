@@ -90,10 +90,6 @@ void BestFirstSearch::runBestFirstSearch(GraphNode* &startNode, GraphNode* &endN
         qDebug() << "nullptr start/end nodes";
         return;
     }
-    else
-    {
-        qDebug() << "BestFirstSearch : EN : " << endNode;
-    }
 
     // only start node in open list
     open.push_back(startNode);
@@ -103,6 +99,12 @@ void BestFirstSearch::runBestFirstSearch(GraphNode* &startNode, GraphNode* &endN
         // pick last(top of stack) node from open list
         auto& N = open.front();
         open.pop_front();
+        N->setInspecting();
+
+        // update every 'x' milliseconds
+        QEventLoop loop;
+        QTimer::singleShot(speed, &loop, SLOT(quit()));
+        loop.exec();
 
         // add visited node to closed list
         closed.push_back(N);
@@ -137,10 +139,6 @@ void BestFirstSearch::runBestFirstSearch(GraphNode* &startNode, GraphNode* &endN
                 addToOpen(M, open, endNode);
             }
         }
-
-        // update every 'x' milliseconds
-        QCoreApplication::processEvents();
-        Sleep(speed);
     }
 
     totalNodes = closed.size();

@@ -109,11 +109,6 @@ void Dijkstra::runDijkstra(GraphNode *&startNode, GraphNode *&endNode, QVector<Q
         qDebug() << "nullptr start/end nodes";
         return;
     }
-    else
-    {
-        qDebug() << "Diakstra : EN : " << endNode;
-    }
-
 
     // g() value of start node
     startNode->setGCost(0);
@@ -127,14 +122,18 @@ void Dijkstra::runDijkstra(GraphNode *&startNode, GraphNode *&endNode, QVector<Q
         // pick a node with lowest g() value from open list
         auto& N = open.front();
         open.pop_front();
+        N->setInspecting();
+
+        // update every 'x' milliseconds
+        QEventLoop loop;
+        QTimer::singleShot(speed, &loop, SLOT(quit()));
+        loop.exec();
 
         // goal node found?
         if(N == endNode)
         {
             // reconstructPath(endNode);
-
             qDebug() << "Goal Found";
-
             break;
         }
 
@@ -173,10 +172,6 @@ void Dijkstra::runDijkstra(GraphNode *&startNode, GraphNode *&endNode, QVector<Q
                 }
             }
         }
-
-        // update every 'x' milliseconds
-        QCoreApplication::processEvents();
-        Sleep(speed);
     }
     totalNodes = closed.size();
 }

@@ -69,10 +69,6 @@ void DFS::runDFS(GraphNode *&startNode, GraphNode *&endNode, QVector<QVector<Gra
         qDebug() << "nullptr start/end nodes";
         return;
     }
-    else
-    {
-        qDebug() << "DFS : EN : " << endNode;
-    }
 
     // only start node in open list
     open.push_back(startNode);
@@ -82,6 +78,12 @@ void DFS::runDFS(GraphNode *&startNode, GraphNode *&endNode, QVector<QVector<Gra
         // pick last(top of stack) node from open list
         auto& N = open.front();
         open.pop_front();
+        N->setInspecting();
+
+        // update every 'x' milliseconds
+        QEventLoop loop;
+        QTimer::singleShot(speed, &loop, SLOT(quit()));
+        loop.exec();
 
         // add visited node to closed list
         closed.push_back(N);
@@ -91,7 +93,6 @@ void DFS::runDFS(GraphNode *&startNode, GraphNode *&endNode, QVector<QVector<Gra
         if(N == endNode)
         {
             // reconstructPath(endNode);
-
             qDebug() << "Goal Found";
             break;
         }
@@ -115,14 +116,8 @@ void DFS::runDFS(GraphNode *&startNode, GraphNode *&endNode, QVector<QVector<Gra
                 M->setOpen();
             }
         }
-
         open = unvisited + open;
-
-        // update every 'x' milliseconds
-        QCoreApplication::processEvents();
-        Sleep(speed);
     }
-
     totalNodes = closed.size();
 }
 
