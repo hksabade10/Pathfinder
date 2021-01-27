@@ -12,7 +12,7 @@ public:
 
     QRectF boundingRect() const override;
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;        
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
 
     void addNeighbour(GraphNode* node);
@@ -41,7 +41,10 @@ public:
 
     void setObstacle();
 
+    void resetObstacle();
+
     void resetNode();
+
 
 
     // getters
@@ -61,10 +64,10 @@ public:
 
     bool isObstacle();
 
+
 private:
 
     QRectF rect;
-    bool bPressed = false;
 
     int gcost = INT32_MAX;
     int hcost = INT32_MAX;

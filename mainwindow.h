@@ -6,7 +6,6 @@
 #include <QtGui>
 
 #include "graphicsscene.h"
-//#include "graphnode.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,9 +19,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void mousePressedEvent(QMouseEvent event);
-
     void resetScreen();
+
+    void read(const QJsonObject &json);
+
+    void write(QJsonObject &json, QString mName) const;
+
+    void startup();
+
 
 private slots:
     void on_startAlgorithm_clicked();
@@ -33,12 +37,22 @@ private slots:
 
     void on_speedSlider_valueChanged(int value);
 
+    void on_saveButton_clicked();
+
+    void on_generateButton_clicked();
+
+    void on_deleteButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     GraphicsScene* scene;
 
     QVector<QVector<GraphNode*>> node;
+
+    QString mName;
+
+    QJsonObject mObj;
 
     int width = 30;
     int height = 20;

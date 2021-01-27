@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
+#include <QHoverEvent>
 
 class GraphNode;
 
@@ -18,7 +19,7 @@ public:
 
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
-    //void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 
     void setStartNode(GraphNode* node);
 
@@ -28,7 +29,9 @@ public:
 
     GraphNode* &getEndNode();
 
+
 private:
+
     bool bStart = false;
 
     bool bEnd = false;
@@ -38,6 +41,8 @@ private:
     GraphNode* start = nullptr;
 
     GraphNode* end = nullptr;
+
+    //QJsonDocument json;
 
 };
 

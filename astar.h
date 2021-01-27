@@ -3,7 +3,6 @@
 
 #include <graphnode.h>
 
-
 class AStar
 {
 public:

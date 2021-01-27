@@ -6,6 +6,8 @@
 #include "bfs.h"
 #include "dfs.h"
 #include "dijkstra.h"
+#include "mapdialog.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,14 +19,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setRenderHint(QPainter::Antialiasing);
 
-    ui->comboBox->addItem("A*");
-    ui->comboBox->addItem("Dijkstra");
-    ui->comboBox->addItem("Best First Search");
-    ui->comboBox->addItem("BFS");
-    ui->comboBox->addItem("DFS");
+    ui->graphicsView->setMouseTracking(true);
+
+    ui->algoComboBox->addItem("A*");
+    ui->algoComboBox->addItem("Dijkstra");
+    ui->algoComboBox->addItem("Best First Search");
+    ui->algoComboBox->addItem("BFS");
+    ui->algoComboBox->addItem("DFS");
 
     height = 35;
-    width = 50;
+    width = 55;
 
     node.resize(height);
     // add nodes in the window
@@ -37,9 +41,36 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
 
+    // generate neighbours
+    for(int i = 0; i < height; i++)
+    {
+        for(int j = 0; j < width; j++)
+        {
+            if(i > 0)
+                node[i][j]->addNeighbour(node[i-1][j]);     // top
+            if(j < width - 1)
+                node[i][j]->addNeighbour(node[i][j+1]);     // right
+            if(i < height - 1)
+                node[i][j]->addNeighbour(node[i+1][j]);     // bottom
+            if(j > 0)
+                node[i][j]->addNeighbour(node[i][j-1]);     // left
+            if(i > 0 && j < width - 1)
+                node[i][j]->addNeighbour(node[i-1][j+1]);   // top-right
+            if(i < height - 1 && j < width - 1)
+                node[i][j]->addNeighbour(node[i+1][j+1]);   // bottom-right
+            if(j > 0 && i < height - 1)
+                node[i][j]->addNeighbour(node[i+1][j-1]);   // bottom-left
+            if(i > 0 && j > 0)
+                node[i][j]->addNeighbour(node[i-1][j-1]);   // top-left
+        }
+    }
+
     // default position for start and end nodes
-    scene->setStartNode(node[9][9]);
-    scene->setEndNode(node[9][40]);
+    scene->setStartNode(node[2][2]);
+    scene->setEndNode(node[height-3][width-3]);
+
+    startup();
+
 }
 
 MainWindow::~MainWindow()
@@ -69,17 +100,76 @@ void MainWindow::resetScreen()
     scene->setEndNode(scene->getEndNode());
 }
 
+
+void MainWindow::read(const QJsonObject &json)
+{
+    QString mName = ui->mapComboBox->currentText();
+
+    if(json.contains(mName) && json[mName].isArray())
+    {
+        QJsonArray jArray = json[mName].toArray();
+
+        for(auto arr : jArray)
+        {
+            if(arr.isArray())
+            {
+                QJsonArray jArr = arr.toArray();
+                node[jArr[0].toInt()][jArr[1].toInt()]->setObstacle();
+            }
+        }
+    }
+}
+
+void MainWindow::write(QJsonObject &json, QString mName) const
+{
+    QJsonArray jArray;
+    for(int i = 0; i < node.size(); i++)
+    {
+        for(int j = 0; j < node[0].size(); j++)
+        {
+            QJsonArray jArr;
+            if(node[i][j]->isObstacle())
+            {
+                jArr.append(i);
+                jArr.append(j);
+                jArray.append(jArr);
+            }
+        }
+    }
+
+    json.insert(mName, jArray);
+}
+
+void MainWindow::startup()
+{
+    QFile loadFile(QStringLiteral("save.json"));
+
+    if (!loadFile.open(QIODevice::ReadOnly)) {
+       qWarning("Couldn't open save file.");
+       return;
+    }
+
+    QByteArray saveData = loadFile.readAll();
+    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+
+    mObj = loadDoc.object();
+    ui->mapComboBox->addItems(mObj.keys());
+}
+
+
 void MainWindow::on_startAlgorithm_clicked()
 {
+
+    ui->startAlgorithm->setEnabled(false);
+
     if(!scene->getStartNode() || !scene->getEndNode())
     {
-        // QMessageLogger message()
         qDebug() << "nullptr start/end nodes";
         return;
     }
 
     // select algorithm to run from comboBox
-    QString selection = ui->comboBox->currentText();
+    QString selection = ui->algoComboBox->currentText();
 
     if(selection == QString("A*"))
     {
@@ -112,7 +202,6 @@ void MainWindow::on_startAlgorithm_clicked()
         ui->nodesBox->setText(QString::number(algo.getTotalNodes()));
     }
 
-
     // display cost on ui
     if(scene->getEndNode()->getGCost() == INT32_MAX)
         ui->costBox->setText(QString("NA"));
@@ -132,6 +221,8 @@ void MainWindow::on_startAlgorithm_clicked()
         QTimer::singleShot(speed, &loop, SLOT(quit()));
         loop.exec();
     }
+
+    ui->startAlgorithm->setEnabled(true);
 }
 
 void MainWindow::on_clearButton_clicked()
@@ -150,4 +241,70 @@ void MainWindow::on_speedSlider_valueChanged(int value)
 {
     speed = value;
     ui->spinBox->setValue(value);
+}
+
+void MainWindow::on_saveButton_clicked()
+{
+    MapDialog map;
+
+    map.setModal(true);
+    map.exec();
+
+    mName = map.getName();
+
+    if(mName == "")
+        return;
+
+    if(!mObj.contains(mName))
+    {
+        ui->mapComboBox->addItem(mName);
+    }
+    else
+    {
+        QMessageLogger msg;
+        msg.warning("duplicate overwritten!");
+    }
+
+    QFile saveFile(QStringLiteral("save.json"));
+
+    if (!saveFile.open(QIODevice::WriteOnly))
+    {
+        qWarning("Couldn't open save file.");
+        return;
+    }
+
+    write(mObj, mName);
+    saveFile.write(QJsonDocument(mObj).toJson(QJsonDocument::Compact));
+
+    qDebug() << "saving...";
+
+}
+
+void MainWindow::on_generateButton_clicked()
+{
+    resetScreen();
+    read(mObj);
+}
+
+void MainWindow::on_deleteButton_clicked()
+{
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Delete?", "Are you sure you want to delete " + ui->mapComboBox->currentText() + "?",
+                                  QMessageBox::Yes|QMessageBox::No);
+
+    if (reply == QMessageBox::Yes && ui->mapComboBox->currentText() != QString("Default"))
+    {
+        mObj.remove(ui->mapComboBox->currentText());
+        ui->mapComboBox->removeItem(ui->mapComboBox->currentIndex());
+
+        QFile saveFile(QStringLiteral("save.json"));
+
+        if (!saveFile.open(QIODevice::WriteOnly))
+        {
+            qWarning("Couldn't open save file.");
+            return;
+        }
+        saveFile.write(QJsonDocument(mObj).toJson(QJsonDocument::Compact));
+    }
 }

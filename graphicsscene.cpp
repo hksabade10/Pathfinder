@@ -3,6 +3,7 @@
 
 #include <QDebug>
 
+
 GraphicsScene::GraphicsScene(QObject *parent)
 {
 
@@ -14,21 +15,13 @@ GraphicsScene::~GraphicsScene()
 }
 
 void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    // GraphNode* itemsList = (GraphNode*)itemAt(
-
+{   
     GraphNode* item = (GraphNode*)itemAt(event->scenePos(), QTransform());
 
     if(!item)
-    {
         return;
-    }
 
-    if(event->modifiers() & Qt::ShiftModifier && event->button() == Qt::LeftButton)
-    {
-         item->setObstacle();
-    }
-    else if(event->button() == Qt::LeftButton)
+    if(event->button() == Qt::MiddleButton)
     {
         if(start)
             start->resetNode();
@@ -45,6 +38,27 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     QGraphicsScene::mousePressEvent(event);
 }
+
+void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(event->buttons() == Qt::LeftButton)
+    {
+        GraphNode* item = (GraphNode*)itemAt(event->scenePos(), QTransform());
+
+        if(!item || item == start || item == end)
+            return;
+
+        if(event->modifiers() & Qt::ShiftModifier)
+        {
+            item->resetObstacle();
+        }
+        else
+        {
+            item->setObstacle();
+        }
+    }
+}
+
 
 void GraphicsScene::setStartNode(GraphNode *node)
 {
@@ -77,3 +91,4 @@ GraphNode* &GraphicsScene::getEndNode()
 {
     return end;
 }
+

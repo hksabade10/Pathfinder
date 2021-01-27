@@ -24,7 +24,8 @@ SOURCES += \
     graphicsscene.cpp \
     graphnode.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    mapdialog.cpp
 
 HEADERS += \
     astar.h \
@@ -34,10 +35,12 @@ HEADERS += \
     dijkstra.h \
     graphicsscene.h \
     graphnode.h \
-    mainwindow.h
+    mainwindow.h \
+    mapdialog.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    mapdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

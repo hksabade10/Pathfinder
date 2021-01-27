@@ -40,39 +40,6 @@ bool BestFirstSearch::isPresent(GraphNode *M, QList<GraphNode *> &list)
 
 void BestFirstSearch::runBestFirstSearch(GraphNode* &startNode, GraphNode* &endNode, QVector<QVector<GraphNode*>> &node, int& speed)
 {
-    int height = node.size();
-    int width = node[0].size();
-
-    // find neighbours of individual nodes
-    for(int i = 0; i < height; i++)
-    {
-        for(int j = 0; j < width; j++)
-        {
-            // ignoring obstacle nodes as neighbours
-            if(node[i][j]->isObstacle())
-                continue;
-
-            // sides
-            if(j > 0)
-                node[i][j]->addNeighbour(node[i][j-1]);
-            if(j < width - 1)
-                node[i][j]->addNeighbour(node[i][j+1]);
-            if(i > 0)
-                node[i][j]->addNeighbour(node[i-1][j]);
-            if(i < height - 1)
-                node[i][j]->addNeighbour(node[i+1][j]);
-
-            // diagonals
-            if(i > 0 && j > 0)
-                node[i][j]->addNeighbour(node[i-1][j-1]);
-            if(i > 0 && j < width - 1)
-                node[i][j]->addNeighbour(node[i-1][j+1]);
-            if(j > 0 && i < height - 1)
-                node[i][j]->addNeighbour(node[i+1][j-1]);
-            if(i < height - 1 && j < width - 1)
-                node[i][j]->addNeighbour(node[i+1][j+1]);
-        }
-    }
 
     //*********************//
     // DFS algorithm start //
@@ -83,13 +50,6 @@ void BestFirstSearch::runBestFirstSearch(GraphNode* &startNode, GraphNode* &endN
 
     // list of nodes visited
     QList<GraphNode*> closed;
-
-    // Debug
-    if(!startNode || !endNode)
-    {
-        qDebug() << "nullptr start/end nodes";
-        return;
-    }
 
     // only start node in open list
     open.push_back(startNode);
@@ -114,17 +74,18 @@ void BestFirstSearch::runBestFirstSearch(GraphNode* &startNode, GraphNode* &endN
         if(N == endNode)
         {
             // reconstructPath(endNode);
-
             qDebug() << "Goal Found";
             break;
         }
 
-        QVector<GraphNode*> neighbours = N->getNeighbours();
         QList<GraphNode*> unvisited;
 
         // explore all neighbours of N
-        for(auto& M : neighbours)
+        for(auto& M : N->getNeighbours())
         {
+            if(M->isObstacle())
+                continue;
+
             // isPresentInOpen?
             if(isPresent(M, open) || isPresent(M, closed))
             {

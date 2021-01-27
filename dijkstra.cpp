@@ -59,39 +59,6 @@ void Dijkstra::addToOpen(GraphNode *M, QQueue<GraphNode *> &open)
 
 void Dijkstra::runDijkstra(GraphNode *&startNode, GraphNode *&endNode, QVector<QVector<GraphNode *> > &node, int& speed)
 {
-    int height = node.size();
-    int width = node[0].size();
-
-    // find neighbours of individual nodes
-    for(int i = 0; i < height; i++)
-    {
-        for(int j = 0; j < width; j++)
-        {
-            // ignoring obstacle nodes as neighbours
-            if(node[i][j]->isObstacle())
-                continue;
-
-            // sides
-            if(j > 0)
-                node[i][j]->addNeighbour(node[i][j-1]);
-            if(j < width - 1)
-                node[i][j]->addNeighbour(node[i][j+1]);
-            if(i > 0)
-                node[i][j]->addNeighbour(node[i-1][j]);
-            if(i < height - 1)
-                node[i][j]->addNeighbour(node[i+1][j]);
-
-            // diagonals
-            if(i > 0 && j > 0)
-                node[i][j]->addNeighbour(node[i-1][j-1]);
-            if(i > 0 && j < width - 1)
-                node[i][j]->addNeighbour(node[i-1][j+1]);
-            if(j > 0 && i < height - 1)
-                node[i][j]->addNeighbour(node[i+1][j-1]);
-            if(i < height - 1 && j < width - 1)
-                node[i][j]->addNeighbour(node[i+1][j+1]);
-        }
-    }
 
     //**************************//
     // Dijkstra algorithm start //
@@ -102,13 +69,6 @@ void Dijkstra::runDijkstra(GraphNode *&startNode, GraphNode *&endNode, QVector<Q
 
     // list of nodes visited in order
     QQueue<GraphNode*> closed;
-
-    // Debug
-    if(!startNode || !endNode)
-    {
-        qDebug() << "nullptr start/end nodes";
-        return;
-    }
 
     // g() value of start node
     startNode->setGCost(0);
@@ -141,11 +101,12 @@ void Dijkstra::runDijkstra(GraphNode *&startNode, GraphNode *&endNode, QVector<Q
         closed.push_back(N);
         N->setClosed();
 
-        QVector<GraphNode*> neighbours = N->getNeighbours();
-
         // explore all neighbours of N
-        for(auto& M : neighbours)
+        for(auto& M : N->getNeighbours())
         {
+            if(M->isObstacle())
+                continue;
+
             // found better path?
             if(N->getGCost() + distance(N , M) < M->getGCost())
             {

@@ -1,5 +1,7 @@
+
 #include "graphnode.h"
 #include <QtMath>
+#include <QGraphicsSceneHoverEvent>
 
 GraphNode::GraphNode(int x, int y, qreal width, qreal height)
 {
@@ -12,31 +14,36 @@ GraphNode::GraphNode(int x, int y, qreal width, qreal height)
 }
 
 QRectF GraphNode::boundingRect() const
-{
-    return rect;
+{        
+    return QRectF(rect.x()-2, rect.y()-2, rect.width()+4, rect.height()+4);
 }
 
 void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    QRectF rec = boundingRect();
+    QRectF rec = rect;
     QBrush brush(Qt::white);
 
     if(bStart)
     {
+        rec = QRectF(rect.x()-2, rect.y()-2, rect.width()+4, rect.height()+4);
         brush.setColor(Qt::red);
     }
     else if(bEnd)
     {
+        rec = QRectF(rect.x()-2, rect.y()-2, rect.width()+4, rect.height()+4);
         brush.setColor(Qt::blue);
     }
     else if(bObstacle)
     {
+        rec = QRectF(rect.x()-2, rect.y()-2, rect.width()+4, rect.height()+4);
         brush.setColor(Qt::black);
         // hide();
     }
     else if(bPath)
     {
+        rec = QRectF(rect.x()-2, rect.y()-2, rect.width()+4, rect.height()+4);
         brush.setColor(Qt::green);
+        painter->setPen(Qt::green);
     }
     else if(bClosed)
     {
@@ -44,6 +51,7 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     }
     else if(bInspecting)
     {
+        rec = QRectF(rect.x()-2, rect.y()-2, rect.width()+4, rect.height()+4);
         brush.setColor(Qt::darkCyan);
     }
     else if(bOpen)
@@ -129,6 +137,12 @@ void GraphNode::setObstacle()
     update();
 }
 
+void GraphNode::resetObstacle()
+{
+    bObstacle = false;
+    update();
+}
+
 void GraphNode::resetNode()
 {
     bClosed = false;
@@ -145,7 +159,7 @@ void GraphNode::resetNode()
 
     parent = nullptr;
 
-    neighbours.clear();
+    // neighbours.clear();
 
     update();
 }
